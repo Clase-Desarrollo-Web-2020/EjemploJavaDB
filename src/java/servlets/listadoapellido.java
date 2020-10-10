@@ -20,8 +20,8 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author geofr
  */
-@WebServlet(name = "listar", urlPatterns = {"/listar"})
-public class listar extends HttpServlet {
+@WebServlet(name = "listadoapellido", urlPatterns = {"/listadoapellido"})
+public class listadoapellido extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -34,21 +34,22 @@ public class listar extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        String parametro = request.getParameter("apellido");
+
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
-
         Conexion connection = new Conexion();
         ResultSet resultSet = null;
 
         try {
-            resultSet = connection.GetEstudiantes();
+            resultSet = connection.GetEstudiantesApellido(parametro);
 
             out.println("<html>");
             out.println("<head>");
             out.println("<title>Servlet listar</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Listado general de estudiantes</h1>");
+            out.println("<h1>Listado estudiantes con apellido: " + parametro + "</h1>");
             out.println("<br/><br/>");
             out.println("<table border=1>");
             //Recorremos el Resultset
@@ -80,7 +81,7 @@ public class listar extends HttpServlet {
             }
             out.println("</table>");
             out.println("<br/><br/>");
-            out.println("<a href=\"inicio.jsp\">Regresar al Inicio</a>");
+            out.println("<a href=\"formularioapellido.jsp\">Regresar al Inicio</a>");
             out.println("</body>");
             out.println("</html>");
             connection.Desconectar();

@@ -7,7 +7,6 @@ package servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import javadb.Conexion;
 import javax.servlet.ServletException;
@@ -20,8 +19,8 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author geofr
  */
-@WebServlet(name = "listar", urlPatterns = {"/listar"})
-public class listar extends HttpServlet {
+@WebServlet(name = "insertar", urlPatterns = {"/insertar"})
+public class insertar extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -34,55 +33,34 @@ public class listar extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        Integer codigo = Integer.parseInt(request.getParameter("codigo"));
+        String nombre = request.getParameter("nombre");
+        String apellido = request.getParameter("apellido");
+        Integer nota = Integer.parseInt(request.getParameter("nota"));
+
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
 
         Conexion connection = new Conexion();
-        ResultSet resultSet = null;
-
         try {
-            resultSet = connection.GetEstudiantes();
 
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet listar</title>");
+            out.println("<title>Servlet insertar</title>");
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Listado general de estudiantes</h1>");
-            out.println("<br/><br/>");
-            out.println("<table border=1>");
-            //Recorremos el Resultset
-            while (resultSet.next()) {
-                int id, calificacion;
-                String nombre, apellido;
 
-                //Recogemos los datos llamando al nombre de la columna
-                //que el Resultset nos devuelve
-                id = resultSet.getInt("id");
-                nombre = resultSet.getString("nombre");
-                apellido = resultSet.getString("apellido");
-                calificacion = resultSet.getInt("calificacion");
-
-                out.println("<tr>");
-                out.println("<td>");
-                out.println(id);
-                out.println("</td>");
-                out.println("<td>");
-                out.println(nombre);
-                out.println("</td>");
-                out.println("<td>");
-                out.println(apellido);
-                out.println("</td>");
-                out.println("<td>");
-                out.println(calificacion);
-                out.println("</td>");
-                out.println("</tr>");
+            String msg = connection.InsertarEstudiante(codigo, nombre, apellido, nota);
+            if (msg.equalsIgnoreCase("OK")) {
+                out.println("Nuevo estudiante registrado!");
+            } else {
+                out.println("Error insertando nuevo estudiante:<br/>" + msg);
             }
-            out.println("</table>");
             out.println("<br/><br/>");
             out.println("<a href=\"inicio.jsp\">Regresar al Inicio</a>");
             out.println("</body>");
             out.println("</html>");
+
             connection.Desconectar();
         } catch (SQLException sqlEx) {
             out.println("<html>" + sqlEx.getMessage() + "</html>");
